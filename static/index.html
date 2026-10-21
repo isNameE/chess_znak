@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Контур сборки · Демо АРМ</title><link rel="stylesheet" href="/styles.css"></head>
+<body>
+<aside class="sidebar">
+ <a class="brand" href="#operator"><span class="brand-icon">▥</span><span>Контур сборки<small>АРМ АГРЕГАЦИИ</small></span></a>
+ <div class="workspace"><span class="status-dot"></span> Локальное рабочее место<small>Общий стол · Две линии</small></div>
+ <div class="nav-title">РАБОЧЕЕ ПРОСТРАНСТВО</div>
+ <nav aria-label="Основная навигация">
+  <a href="#operator" data-page="operator"><span>▦</span> Рабочее место</a>
+  <a href="#pallet" data-page="pallet"><span>▤</span> Сборка паллеты</a>
+  <a href="#registry" data-page="registry"><span>▧</span> Реестр упаковок</a>
+  <a href="#queue" data-page="queue"><span>⇄</span> Очередь обмена <b id="queue-count">0</b></a>
+  <a href="#journal" data-page="journal"><span>≡</span> Журнал операций</a>
+  <a href="#integration" data-page="integration"><span>↗</span> True API</a>
+  <a href="#settings" data-page="settings"><span>⚙</span> Настройки</a>
+ </nav>
+ <div class="sidebar-bottom"><div class="avatar">ОП</div><div>Оператор демо<small>Локальная сессия · без входа</small></div></div>
+</aside>
+<div class="shell">
+ <header class="topbar"><span>Производство <span class="slash">/</span> <strong id="breadcrumb">Рабочее место</strong></span><div><span class="demo-tag">ДЕМО</span><button class="text-button" data-action="refresh-state">Обновить ↻</button><span id="clock"></span></div></header>
+ <div class="demo-banner"><span>◈</span><div><strong>Учебный режим</strong> Оборудование и очередь демо имитируются. Подключение к True API — на отдельном экране.</div><button class="text-button" id="tour-button">Как проверить демо ↗</button></div>
+ <main id="main"></main>
+ <footer><span><i class="status-dot"></i> Данные сохраняются в PostgreSQL</span><span>Контур сборки / демо 0.2</span></footer>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="details"><div id="dialog-content"></div><button class="button secondary dialog-close" id="close-dialog">Закрыть</button></dialog>
+<script src="/app.js" defer></script>
+</body></html>

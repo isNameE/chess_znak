@@ -1,0 +1,17 @@
+data/
+__pycache__/
+*.sqlite3
+.venv/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+*.log
+*.pem
+*.pfx
+*.p12
+*.key
+*.sig
+*.p7s
+preview*.png
+backups/
