@@ -11,6 +11,9 @@ import psycopg
 from config import ROOT, settings
 import repository
 from integrations.true_api import TrueApi, IntegrationError
+from plant_api import router as plant_router,current_user
+from fastapi import Depends,HTTPException
+from domain import RuleError
 
 logger = logging.getLogger("arm")
 
@@ -26,7 +29,13 @@ async def lifespan(app):
     app.state.true_api.close()
 
 
-app = FastAPI(title="Контур сборки — демо АРМ", version="0.2.0", lifespan=lifespan)
+app = FastAPI(title="Контур производства — демо АРМ", version="0.3.0", lifespan=lifespan)
+app.include_router(plant_router)
+
+
+@app.exception_handler(RuleError)
+async def rule_error(request,exc):
+    return JSONResponse({'error':str(exc)},status_code=422)
 
 
 @app.middleware("http")
@@ -77,17 +86,20 @@ async def integration_error(request,exc):
 def health():
     with repository.connect() as con:
         con.execute("SELECT 1")
-    return {"status":"ok","version":"0.2.0","database":"postgresql"}
+    return {"status":"ok","version":"0.3.0","database":"postgresql"}
 
 
 @app.get("/api/state")
-def read_state():
+def read_state(user=Depends(current_user)):
+    if user['mode']!='demo':raise HTTPException(410,'Используйте постраничный API /api/plant.')
+    with repository.connect() as con:
+        if con.execute('SELECT 1 FROM work_shifts LIMIT 1').fetchone():raise HTTPException(410,'Используйте постраничный API /api/plant.')
     return repository.read_state()
 
 
 @app.get("/api/export")
-def export_state():
-    return JSONResponse(repository.read_state(),headers={"Content-Disposition":'attachment; filename="arm-demo.json"'})
+def export_state(user=Depends(current_user)):
+    raise HTTPException(410,'Используйте отчёты /api/plant/reports.csv.')
 
 
 class Command(BaseModel):
@@ -98,7 +110,10 @@ class Command(BaseModel):
 
 
 @app.post("/api/action/{action}")
-def command(action:str,body:Command):
+def command(action:str,body:Command,user=Depends(current_user)):
+    if user['mode']!='demo':raise HTTPException(410,'Используйте производственные команды /api/plant/action.')
+    with repository.connect() as con:
+        if con.execute('SELECT 1 FROM work_shifts LIMIT 1').fetchone():raise HTTPException(410,'Производственное рабочее место активно; старый API отключён.')
     try:
         state,error = repository.command(action,body.data,str(body.requestId),body.revision)
     except repository.Conflict as exc:
@@ -107,12 +122,13 @@ def command(action:str,body:Command):
 
 
 @app.get("/api/integration/status")
-def integration_status(request:Request):
+def integration_status(request:Request,user=Depends(current_user)):
     return request.app.state.true_api.status()
 
 
 @app.post("/api/integration/challenge")
-def auth_challenge(request:Request):
+def auth_challenge(request:Request,user=Depends(current_user)):
+    if user['role']!='admin':raise HTTPException(403,'Настройка интеграции доступна администратору.')
     result = request.app.state.true_api.challenge()
     repository.audit("True API sandbox: получен запрос авторизации")
     return result
@@ -124,7 +140,8 @@ class AuthSignature(BaseModel):
 
 
 @app.post("/api/integration/authenticate")
-def authenticate(body:AuthSignature,request:Request):
+def authenticate(body:AuthSignature,request:Request,user=Depends(current_user)):
+    if user['role']!='admin':raise HTTPException(403,'Настройка интеграции доступна администратору.')
     result = request.app.state.true_api.authenticate(body.uuid,body.signature)
     repository.audit("True API sandbox: выполнена авторизация")
     return result
@@ -135,7 +152,8 @@ class CodeQuery(BaseModel):
 
 
 @app.post("/api/integration/codes")
-def code_info(body:CodeQuery,request:Request):
+def code_info(body:CodeQuery,request:Request,user=Depends(current_user)):
+    if user['role']!='admin':raise HTTPException(403,'Запросы интеграции доступны администратору.')
     result = request.app.state.true_api.code_info(body.codes)
     repository.audit(f"True API sandbox: запрошены сведения о {len(body.codes)} кодах")
     return {"environment":"sandbox","result":result}
@@ -148,7 +166,7 @@ def index():
 
 @app.get("/{asset}")
 def assets(asset:str):
-    if asset not in ("app.js","styles.css"):
+    if asset not in ("app.js","styles.css","plant.js","plant.css"):
         return JSONResponse({"error":"Не найдено"},status_code=404)
     return FileResponse(ROOT/"static"/asset)
 

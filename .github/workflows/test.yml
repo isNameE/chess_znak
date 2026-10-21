@@ -32,3 +32,4 @@ jobs:
       - run: python -m pip install -r requirements-lock.txt
       - run: python -m pytest
       - run: node --check static/app.js
+      - run: node --check static/plant.js

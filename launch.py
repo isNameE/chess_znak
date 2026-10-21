@@ -13,7 +13,7 @@ URL = f"http://127.0.0.1:{settings().arm_port}"
 try:
     with urllib.request.urlopen(URL + "/api/health", timeout=2) as response:
         state = json.load(response)
-    if state.get("version") != "0.2.0" or state.get("database") != "postgresql":
+    if state.get("version") != "0.3.0" or state.get("database") != "postgresql":
         raise RuntimeError("Port 8765 is used by another application.")
 except (OSError, ValueError):
     root=Path(__file__).resolve().parent

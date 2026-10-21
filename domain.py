@@ -173,6 +173,8 @@ def apply(state, action, data):
         doc = next((d for d in s["documents"] if d["id"] == data.get("id")), None)
         if not doc:
             raise RuleError("Документ не найден.")
+        if doc.get("provider", "simulator") != "simulator":
+            raise RuleError("Результат реального документа нельзя изменять имитатором.")
         if not s["online"]:
             raise RuleError("Нет связи с имитатором. Документ сохранён в очереди.")
         if action == "reconcile":

@@ -8,6 +8,9 @@ import repository
 
 if __name__=='__main__':
     repository.migrate()
+    with repository.connect() as con:
+        if con.execute('SELECT 1 FROM work_shifts LIMIT 1').fetchone():
+            raise SystemExit('Plant workspace is active. Use the plant UI; legacy seeding is disabled.')
     s=repository.read_state()
     if s['boxes'] or s['draft'] or s['palletDraft']:
         raise SystemExit('Database is not empty; no changes made.')

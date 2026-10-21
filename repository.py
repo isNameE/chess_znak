@@ -78,7 +78,7 @@ def load(con):
 def save(con, s, previous=None):
     # Closed records are append-only except explicit status/print counters. No JSON snapshot is stored.
     bid = batch_id(con, s["line"], s["batch"])
-    con.execute("INSERT INTO station VALUES(1,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET "
+    con.execute("INSERT INTO station(id,revision,sequence,product_id,line_id,batch_id,operator_id,pallet_target,online) VALUES(1,%s,%s,%s,%s,%s,%s,%s,%s) ON CONFLICT(id) DO UPDATE SET "
                 "revision=excluded.revision,sequence=excluded.sequence,product_id=excluded.product_id,line_id=excluded.line_id,"
                 "batch_id=excluded.batch_id,operator_id=excluded.operator_id,pallet_target=excluded.pallet_target,online=excluded.online",
                 (s["revision"],s["sequence"],s["product"],s["line"],bid,s["operator"],s["palletTarget"],s["online"]))
@@ -93,8 +93,8 @@ def save(con, s, previous=None):
         for a in entries:
             if a["id"] not in known:
                 batch = batch_id(con, a["line"], a["batch"])
-                con.execute("INSERT INTO aggregates VALUES(%s,%s,%s,%s,%s,%s,%s)",
-                            (a["id"],kind,a["product"],a["line"],batch,a["created"],a["prints"]))
+                con.execute("INSERT INTO aggregates(id,kind,product_id,line_id,batch_id,created_at,print_opens,unit_count) VALUES(%s,%s,%s,%s,%s,%s,%s,%s)",
+                            (a["id"],kind,a["product"],a["line"],batch,a["created"],a["prints"],len(a.get("codes",a.get("boxes",[])))))
                 children = a["codes"] if kind == "box" else a["boxes"]
                 for i, child in enumerate(children):
                     if kind == "box":

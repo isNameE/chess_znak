@@ -1,29 +1,36 @@
 <!doctype html>
 <html lang="ru">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Контур сборки · Демо АРМ</title><link rel="stylesheet" href="/styles.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#102a32"><title>Контур производства · Агрегация</title><link rel="stylesheet" href="/plant.css"></head>
 <body>
 <aside class="sidebar">
- <a class="brand" href="#operator"><span class="brand-icon">▥</span><span>Контур сборки<small>АРМ АГРЕГАЦИИ</small></span></a>
- <div class="workspace"><span class="status-dot"></span> Локальное рабочее место<small>Общий стол · Две линии</small></div>
- <div class="nav-title">РАБОЧЕЕ ПРОСТРАНСТВО</div>
- <nav aria-label="Основная навигация">
-  <a href="#operator" data-page="operator"><span>▦</span> Рабочее место</a>
-  <a href="#pallet" data-page="pallet"><span>▤</span> Сборка паллеты</a>
-  <a href="#registry" data-page="registry"><span>▧</span> Реестр упаковок</a>
-  <a href="#queue" data-page="queue"><span>⇄</span> Очередь обмена <b id="queue-count">0</b></a>
-  <a href="#journal" data-page="journal"><span>≡</span> Журнал операций</a>
-  <a href="#integration" data-page="integration"><span>↗</span> True API</a>
-  <a href="#settings" data-page="settings"><span>⚙</span> Настройки</a>
- </nav>
- <div class="sidebar-bottom"><div class="avatar">ОП</div><div>Оператор демо<small>Локальная сессия · без входа</small></div></div>
+  <a class="brand" href="#overview"><span class="brand-symbol">К</span><span>КОНТУР<small>ПРОИЗВОДСТВА</small></span><b>03</b></a>
+  <div class="site-label"><span class="live-dot"></span><div>Маслозавод<small>Две линии · один стол</small></div></div>
+  <div class="nav-caption">ПРОИЗВОДСТВО</div>
+  <nav aria-label="Производство">
+    <a href="#overview" data-page="overview"><i>◫</i>Обзор производства</a>
+    <a href="#orders" data-page="orders"><i>▤</i>Задания на агрегацию</a>
+    <a href="#station" data-page="station"><i>▦</i>Рабочее место</a>
+    <a href="#shifts" data-page="shifts"><i>◷</i>Смены</a>
+    <a href="#registry" data-page="registry"><i>▧</i>Прослеживаемость</a>
+  </nav>
+  <div class="nav-caption">КОНТРОЛЬ И ОБМЕН</div>
+  <nav aria-label="Контроль и обмен">
+    <a href="#printing" data-page="printing"><i>▱</i>Печать этикеток<b id="print-count"></b></a>
+    <a href="#exchange" data-page="exchange"><i>⇄</i>Обмен с ГИС МТ<b id="exchange-count"></b></a>
+    <a href="#incidents" data-page="incidents"><i>△</i>Инциденты<b id="incident-count"></b></a>
+    <a href="#reports" data-page="reports"><i>▥</i>Отчёты и аналитика</a>
+    <a href="#journal" data-page="journal"><i>≡</i>Журнал действий</a>
+    <a href="#settings" data-page="settings"><i>⚙</i>Настройки и True API</a>
+  </nav>
+  <div class="sidebar-foot"><span class="avatar">ОП</span><div><strong id="user-name">Подключение…</strong><small id="user-role">Демо площадка</small></div><button id="account-button" aria-label="Учётная запись">↗</button></div>
 </aside>
-<div class="shell">
- <header class="topbar"><span>Производство <span class="slash">/</span> <strong id="breadcrumb">Рабочее место</strong></span><div><span class="demo-tag">ДЕМО</span><button class="text-button" data-action="refresh-state">Обновить ↻</button><span id="clock"></span></div></header>
- <div class="demo-banner"><span>◈</span><div><strong>Учебный режим</strong> Оборудование и очередь демо имитируются. Подключение к True API — на отдельном экране.</div><button class="text-button" id="tour-button">Как проверить демо ↗</button></div>
- <main id="main"></main>
- <footer><span><i class="status-dot"></i> Данные сохраняются в PostgreSQL</span><span>Контур сборки / демо 0.2</span></footer>
+<div class="app-shell">
+  <header class="topbar"><span class="breadcrumb">Производство <i>/</i> <strong id="page-title">Обзор</strong></span><div><span class="demo-label">ДЕМО СТЕНД</span><span id="clock"></span><button id="account-top" class="icon-button" aria-label="Учётная запись">♙</button><button id="refresh" class="icon-button" aria-label="Обновить данные">↻</button></div></header>
+  <div class="environment-strip"><span class="environment-dot"></span><strong>Учебная площадка</strong><span>Камера, принтер и ответы очереди имитируются.</span><button id="help-button">Сценарий проверки ↗</button></div>
+  <main id="main" aria-live="polite"><div class="loading"><span class="spinner"></span>Загружаем производственный контур…</div></main>
+  <footer><span><i class="live-dot"></i>PostgreSQL · локальный сервер</span><span id="data-time">Ожидаем данные</span><span>Контур производства / 0.3</span></footer>
 </div>
-<div id="toast" role="status" aria-live="polite"></div>
-<dialog id="details"><div id="dialog-content"></div><button class="button secondary dialog-close" id="close-dialog">Закрыть</button></dialog>
-<script src="/app.js" defer></script>
+<div id="toast" role="status"></div>
+<dialog id="modal"><div id="modal-body"></div><button id="modal-close" class="button secondary">Закрыть</button></dialog>
+<script src="/plant.js" defer></script>
 </body></html>

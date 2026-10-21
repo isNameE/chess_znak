@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     true_api_profile_reviewed: bool = False
     arm_access_user: str = ""
     arm_access_password: str = ""
+    arm_demo_mode: bool = True
     true_api_document_path: str = "/api/v3/lk/documents/create"
     true_api_status_path: str = "/api/v4/true-api/doc/{document_id}/info"
 
